@@ -16,19 +16,34 @@
 <script>
     document.addEventListener('DOMContentLoaded',function() {
         let path = "";
+        const storage = require('electron-json-storage');
+        const ipcRenderer = require('electron').ipcRenderer;
+        const remote = require('electron').remote;
+
+        storage.get('workspacePath', function(error,data) {
+            if (Object.keys(data).length > 0) {
+                const arg = {
+                    navigate: "gitclone",
+                    path: data,
+                    skip: true    
+                };
+                ipcRenderer.send('navigate', arg);
+                remote.getCurrentWindow().close();
+            }
+        });
 
         document.querySelector(".browse").addEventListener('click', function() {
             const dialog = require('electron').remote.dialog;
             path = dialog.showOpenDialog({properties: ['openDirectory']});
+            storage.set('workspacePath', {path: path});
             document.querySelector("[name=workspacepath]").value=path;
-        });
+            });
 
         document.querySelector(".step1_button").addEventListener('click', function() {
-            const remote = require('electron').remote;
-            const ipcRenderer = require('electron').ipcRenderer;
             const arg = {
                 navigate: "gitclone",
-                path: path    
+                path: path,
+                skip: false  
             };
             ipcRenderer.send('navigate',arg);
             remote.getCurrentWindow().close();

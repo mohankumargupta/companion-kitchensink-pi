@@ -95,10 +95,17 @@ app.on('window-all-closed', function () {
 ipcMain.on('navigate', function(event, arg) {
   const nextWindow = arg.navigate;
   const pathName = arg.path[0];
+  const skip = arg.skip
   console.log(pathName)
   //console.log(arg);
-  if (nextWindow == "gitclone") {
-    gitcloneWindowOpen(pathName);
+  if (nextWindow == "gitclone" ) {
+    if (!skip) {
+      gitcloneWindowOpen(pathName);
+    }
+
+    else {
+      mainGUIWindowOpen();
+    }
   }
   
 })
