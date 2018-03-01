@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Workspace</title>
+    <link rel="stylesheet" href="workspace.css">
+</head>
+<body>
+    
+    <div class="wrapper">
+        <label for="workspacepath" class="workspacelabel">Workspace Location</label>
+        <input type="text" name="workspacepath" class="textbox"/>
+        <button class="browse">Browse...</button>
+    </div>
+    <button class="step1_button">Next</button>
+
+<script>
+    document.addEventListener('DOMContentLoaded',function() {
+        let path = "";
+
+        document.querySelector(".browse").addEventListener('click', function() {
+            const dialog = require('electron').remote.dialog;
+            path = dialog.showOpenDialog({properties: ['openDirectory']});
+            document.querySelector("[name=workspacepath]").value=path;
+        });
+
+        document.querySelector(".step1_button").addEventListener('click', function() {
+            const remote = require('electron').remote;
+            const ipcRenderer = require('electron').ipcRenderer;
+            const arg = {
+                navigate: "gitclone",
+                path: path    
+            };
+            ipcRenderer.send('navigate',arg);
+            remote.getCurrentWindow().close();
+        });
+    },false);
+</script>
+</body>
+</html>

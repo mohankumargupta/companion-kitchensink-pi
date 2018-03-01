@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download repo from github</title>
+    <link rel="stylesheet" href="workspace.css">
+</head>
+<body>
+    
+    <div class="wrapper">
+    <h1>Need to Download from github</h1>
+    </div>
+    <button class="proceedMainInterface">Proceed</button>
+    <div class="downloadprogress">
+        
+    </div>
+
+<script>
+    const argPathName = require('electron').remote.getCurrentWindow().argPathName;
+    //console.log(argPathName)
+    
+
+        document.querySelector(".proceedMainInterface").addEventListener('click', function() {
+            const remote = require('electron').remote;
+            const ipcRenderer = require('electron').ipcRenderer;
+            ipcRenderer.send('gitclonerepo', argPathName);
+            ipcRenderer.on('downloadcomplete', function() {
+                remote.getCurrentWindow().close();
+            })
+            document.querySelector(".proceedMainInterface").style.display = "none";
+            document.querySelector(".downloadprogress").innerHTML = "Downloading..."
+
+            
+
+        });
+</script>
+</body>
+</html>

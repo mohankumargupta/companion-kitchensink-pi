@@ -1,0 +1,1 @@
+contains html and images(static content)

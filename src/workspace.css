@@ -1,0 +1,16 @@
+
+.wrapper {
+    display: grid;
+}
+
+.workspacelabel {
+  grid-row: 1;
+}
+
+.textbox {
+  grid-row: 1;
+}
+
+.browse {
+    grid-row: 1;
+}
