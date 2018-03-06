@@ -1,0 +1,11 @@
+
+.wrapper {
+    display: grid;
+    grid-template-columns: minmax(100px,1fr) 3fr;
+}
+
+fieldset {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+

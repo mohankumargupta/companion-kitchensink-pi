@@ -1,3 +1,186 @@
+<!DOCTYPE html>
 <html>
-hi!
+<head>
+    <title>Custom Raspian App</title>
+    <link rel="stylesheet" href="maingui.css">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="leftpane">
+        <div>
+            <h3>SECTIONS</h3>
+            <a href="#">User Config</a>
+        </div>
+
+        <div>
+            <h3>ACTIONS</h3>
+            <a href="#">Run script</a>
+              
+            
+        </div>
+
+    </div>
+    <div id="app" class="middlepane">
+        <h3>USER CONFIG</h3>
+        
+        
+        <fieldset>
+        <legend>Pi settings</legend>
+        <div>
+            <label for="hostname">Raspberry Pi host name</label>
+            <input type="hostname"/>
+        </div>
+        <div>
+            <label for="piuserpassword">PASSWORD FOR USER <b>pi</b></label>
+            <input name="piuserpassword" type="text"/>
+        </div>
+        </fieldset>
+      
+
+        <fieldset>
+            <legend>Raspi-config Interfaces</legend>
+            <div v-for="(value,key) in raspiconfig">
+                <div>
+                <label :for="key">{{key}}</label>
+                <input type="checkbox" :name="key" :checked="value" /> 
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Apt-get sofware</legend>
+                
+                <div v-for="value in aptsoftware">
+                    <div>
+                        <input type="text" :value="value"/>
+                </div>
+            
+        </fieldset>
+
+        <fieldset>
+            <legend>NodeRed Modules</legend>
+                <div v-for="value in noderedmodules">
+                    <div>
+                        <input type="text" :value="value"/>
+                </div>            
+        </fieldset>
+
+        <fieldset>
+            <legend>Python 2 modules via apt-get</legend>
+                <div v-for="value in python2apt">
+                    <div>
+                        <input type="text" :value="value"/>
+                </div>             
+        </fieldset>
+
+        <fieldset>
+            <legend>Python 3 modules via apt-get</legend>
+                <div v-for="value in python3apt">
+                    <div>
+                        <input type="text" :value="value"/>
+                </div>             
+        </fieldset>
+
+        <fieldset>
+            <legend>Python 2 modules via pip</legend>
+                <div v-for="value in python2pip">
+                    <div>
+                        <input type="text" :value="value"/>
+                </div>             
+        </fieldset>
+
+        <fieldset>
+            <legend>Python 3 modules via pip</legend>
+                <div v-for="value in python3pip">
+                    <div>
+                        <input type="text" :value="value"/>
+                </div>             
+        </fieldset>
+
+        <fieldset>
+            <legend>Docker Containers</legend>
+            <div v-for="(value,key) in dockercontainers">
+                <div>
+                <label :for="key">{{key}}</label>
+                <input type="checkbox" :name="key" :checked="value" /> 
+                </div>
+            </div>            
+        </fieldset>
+
+    </div>
+
+</div>
+
+
+<script>
+const Vue = require('vue/dist/vue.common.js');
+
+   function vuestuff(userconfig){
+    
+    
+    const aptsoftware = userconfig.RASPBIAN_APT_INSTALL;
+
+    const noderedmodules = userconfig.NODERED_MODULES;
+
+    const python2apt = userconfig.PYTHON2_APT_MODULES;
+
+    const python3apt = userconfig.PYTHON3_APT_MODULES;
+
+    const python2pip = userconfig.PYTHON2_PIP_MODULES;
+
+    const python3pip = userconfig.PYTHON3_PIP_MODULES;
+
+    const dockercontainers = Object.keys(userconfig).reduce(function(acc, cur){
+        if (cur.startsWith('DOCKER_')) {
+            acc[cur] = userconfig[cur];
+        }
+
+        return acc;
+    }, {});
+
+    console.log(dockercontainers);
+    
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            raspiconfig: {
+                vnc: userconfig.RASPICONFIG_ENABLE_VNC,
+                camera: userconfig.RASPICONFIG_ENABLE_CAMERA,
+                i2c: userconfig.RASPICONFIG_ENABLE_I2C,
+                serial: userconfig.RASPICONFIG_ENABLE_SERIAL,
+                onewire: userconfig.RASPICONFIG_ENABLE_ONEWIRE,
+                spi: userconfig.RASPICONFIG_ENABLE_SPI,
+                rgpio: userconfig.RASPICONFIG_ENABLE_RGPIO
+                },
+            aptsoftware: aptsoftware,
+            noderedmodules: noderedmodules,
+            python2apt: python2apt,
+            python3apt: python3apt,
+            python2pip: python2pip,
+            python3pip: python3pip,
+            dockercontainers: dockercontainers
+        }
+    }); 
+    
+   }
+
+    yaml = require('js-yaml');
+    fs = require('fs');
+    path = require('path');
+    const storage = require('electron-json-storage');
+    pathStorage = storage.get('workspacePath', function(error,data){
+        const pathName = data.path[0];
+        const yamlfile = pathName + path.sep + "raspberrypi-ansible-master" + path.sep + "group_vars" + path.sep + "raspberrypis.yml"
+        const userdatayaml = fs.readFileSync(yamlfile, 'utf-8')
+        //console.log(userdatayaml);
+        userconfig = yaml.safeLoad(userdatayaml);
+        console.log(userconfig);
+        vuestuff(userconfig);
+    });
+
+
+</script>
+</body>
 </html>

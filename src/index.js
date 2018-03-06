@@ -67,7 +67,7 @@ function mainGUIWindowOpen () {
     slashes: true
   }))
   // Open the DevTools.
-  //mainWindowGUI.webContents.openDevTools()
+  mainWindowGUI.webContents.openDevTools()
 
   // Emitted when the window is closed.
   //mainWindow.on('closed', function () {

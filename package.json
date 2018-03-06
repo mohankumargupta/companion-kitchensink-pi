@@ -12,8 +12,15 @@
   "dependencies": {
     "axios": "^0.18.0",
     "electron-json-storage": "^4.0.2",
+    "js-yaml": "^3.10.0",
     "node-pty": "^0.7.4",
     "node-unzip-2": "^0.2.7",
+    "vue": "^2.5.13",
+    "vue-js-toggle-button": "^1.2.2",
+    "vue-multipane": "^0.9.5",
     "xterm": "^3.1.0"
+  },
+  "devDependencies": {
+    "electron-webpack": "^1.13.0"
   }
 }
