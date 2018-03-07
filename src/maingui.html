@@ -29,14 +29,44 @@
         <legend>Pi settings</legend>
         <div>
             <label for="hostname">Raspberry Pi host name</label>
-            <input type="hostname"/>
+            <input type="hostname" :value="PI_HOSTNAME"/>
         </div>
         <div>
             <label for="piuserpassword">PASSWORD FOR USER <b>pi</b></label>
-            <input name="piuserpassword" type="text"/>
+            <input name="piuserpassword" type="text" :value="PI_USER_PASSWORD"/>
         </div>
         </fieldset>
       
+        <fieldset>
+            <legend>Keyboard Layout</legend>
+            <div>
+                <label for="keyboardlayout">Language</label>
+                <input name="keyboardlayout" type="text" :value="RASPBIAN_KEYBOARD_LAYOUT"/>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Wifi Settings</legend>
+            <div>
+                <label for="overridewifi">Override wifi</label>
+                <input type="checkbox" name="overridewifi" :checked="RASPBIAN_OVERRIDE_WIFI_SETTINGS"/>
+            </div>
+            <div>
+                <label for="ssid">SSID</label>
+                <input name="ssid" type="text" :value="RASPBIAN_WIFI_SSID" />
+
+                <label for="wifipassword">Password</label>
+                <input type="text" name="wifipassword" :value="RASPBIAN_WIFI_PASSWORD"/>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Bluetooth</legend>
+            <div>
+                <label for="bluetooth">Enable Bluetooth</label>
+                <input name="bluetooth" type="checkbox" :checked="RASPBIAN_ENABLE_BLUETOOTH"/>
+            </div>
+        </fieldset>
 
         <fieldset>
             <legend>Raspi-config Interfaces</legend>
@@ -51,7 +81,7 @@
         <fieldset>
             <legend>Apt-get sofware</legend>
                 
-                <div v-for="value in aptsoftware">
+                <div v-for="value in RASPBIAN_APT_INSTALL">
                     <div>
                         <input type="text" :value="value"/>
                 </div>
@@ -60,7 +90,7 @@
 
         <fieldset>
             <legend>NodeRed Modules</legend>
-                <div v-for="value in noderedmodules">
+                <div v-for="value in NODERED_MODULES">
                     <div>
                         <input type="text" :value="value"/>
                 </div>            
@@ -68,7 +98,7 @@
 
         <fieldset>
             <legend>Python 2 modules via apt-get</legend>
-                <div v-for="value in python2apt">
+                <div v-for="value in PYTHON2_APT_MODULES">
                     <div>
                         <input type="text" :value="value"/>
                 </div>             
@@ -76,7 +106,7 @@
 
         <fieldset>
             <legend>Python 3 modules via apt-get</legend>
-                <div v-for="value in python3apt">
+                <div v-for="value in PYTHON3_APT_MODULES">
                     <div>
                         <input type="text" :value="value"/>
                 </div>             
@@ -84,7 +114,7 @@
 
         <fieldset>
             <legend>Python 2 modules via pip</legend>
-                <div v-for="value in python2pip">
+                <div v-for="value in PYTHON2_PIP_MODULES">
                     <div>
                         <input type="text" :value="value"/>
                 </div>             
@@ -92,7 +122,7 @@
 
         <fieldset>
             <legend>Python 3 modules via pip</legend>
-                <div v-for="value in python3pip">
+                <div v-for="value in PYTHON3_PIP_MODULES">
                     <div>
                         <input type="text" :value="value"/>
                 </div>             
@@ -107,7 +137,9 @@
                 </div>
             </div>            
         </fieldset>
-
+      <div>
+          <button v-on:click="save">Save</button>
+      </div>
     </div>
 
 </div>
@@ -118,7 +150,13 @@ const Vue = require('vue/dist/vue.common.js');
 
    function vuestuff(userconfig){
     
+    const configdata = Object.keys(userconfig).reduce(function(acc,cur) {
+        acc[cur] = userconfig[cur];
+        return acc;
+    }, {});
     
+    console.log(configdata);
+
     const aptsoftware = userconfig.RASPBIAN_APT_INSTALL;
 
     const noderedmodules = userconfig.NODERED_MODULES;
@@ -131,6 +169,16 @@ const Vue = require('vue/dist/vue.common.js');
 
     const python3pip = userconfig.PYTHON3_PIP_MODULES;
 
+    const keyboard = userconfig.RASPBIAN_KEYBOARD_LAYOUT;
+
+    const pi_password = userconfig.PI_USER_PASSWORD;
+
+    const wifipassword = userconfig.RASPBIAN_WIFI_PASSWORD;
+
+    const ssid = userconfig.RASPBIAN_WIFI_SSID;
+
+    const overridewifi = userconfig.RASPBIAN_OVERRIDE_WIFI_SETTINGS;
+
     const dockercontainers = Object.keys(userconfig).reduce(function(acc, cur){
         if (cur.startsWith('DOCKER_')) {
             acc[cur] = userconfig[cur];
@@ -139,11 +187,29 @@ const Vue = require('vue/dist/vue.common.js');
         return acc;
     }, {});
 
-    console.log(dockercontainers);
-    
+        
     var app = new Vue({
         el: '#app',
-        data: {
+        methods: {
+            save: function(event) {
+                const data_to_save = JSON.parse(JSON.stringify(this.$data));
+                yaml = require('js-yaml');
+                fs = require('fs');
+        //const yamlfile = pathName + path.sep + "raspberrypi-ansible-master" + path.sep + "group_vars" + path.sep + "raspberrypis2.yml";
+        console.log(yaml.safeDump(data_to_save));
+
+            pathStorage = storage.get('workspacePath', function(error,data){
+        const pathName = data.path[0];
+        const yamlfile = pathName + path.sep + "raspberrypi-ansible-master" + path.sep + "group_vars" + path.sep + "raspberrypis2.yml";
+        fs.writeFileSync(yamlfile,yaml.safeDump(data_to_save));
+        });              
+
+            }
+        },
+        data: configdata
+ 
+        /*
+        {
             message: 'Hello Vue!',
             raspiconfig: {
                 vnc: userconfig.RASPICONFIG_ENABLE_VNC,
@@ -160,8 +226,14 @@ const Vue = require('vue/dist/vue.common.js');
             python3apt: python3apt,
             python2pip: python2pip,
             python3pip: python3pip,
-            dockercontainers: dockercontainers
+            dockercontainers: dockercontainers,
+            keyboard: keyboard,
+            pipassword: pi_password,
+            overridewifi: overridewifi,
+            ssid: ssid,
+            wifipassword: wifipassword
         }
+        */
     }); 
     
    }
