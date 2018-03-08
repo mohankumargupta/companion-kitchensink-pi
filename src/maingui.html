@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<div class="wrapper">
+<div id="app" class="wrapper">
     <div class="leftpane">
         <div>
             <h3>SECTIONS</h3>
@@ -15,13 +15,13 @@
 
         <div>
             <h3>ACTIONS</h3>
-            <a href="#">Run script</a>
+            <button v-on:click="run">RUN!</button>
               
             
         </div>
 
     </div>
-    <div id="app" class="middlepane">
+    <div class="middlepane">
         <h3>USER CONFIG</h3>
         
         
@@ -70,10 +70,10 @@
 
         <fieldset>
             <legend>Raspi-config Interfaces</legend>
-            <div v-for="(value,key) in raspiconfig">
+            <div v-for="(value,key) in RASPICONFIG">
                 <div>
                 <label :for="key">{{key}}</label>
-                <input type="checkbox" :name="key" :checked="value" /> 
+                <input v-model="RASPICONFIG[key]" type="checkbox" :name="key" :checked="value" /> 
                 </div>
             </div>
         </fieldset>
@@ -130,10 +130,10 @@
 
         <fieldset>
             <legend>Docker Containers</legend>
-            <div v-for="(value,key) in dockercontainers">
+            <div v-for="(value,key) in DOCKER">
                 <div>
                 <label :for="key">{{key}}</label>
-                <input type="checkbox" :name="key" :checked="value" /> 
+                <input v-model="DOCKER[key]" type="checkbox" :name="key" :checked="value" /> 
                 </div>
             </div>            
         </fieldset>
@@ -155,48 +155,21 @@ const Vue = require('vue/dist/vue.common.js');
         return acc;
     }, {});
     
-    console.log(configdata);
-
-    const aptsoftware = userconfig.RASPBIAN_APT_INSTALL;
-
-    const noderedmodules = userconfig.NODERED_MODULES;
-
-    const python2apt = userconfig.PYTHON2_APT_MODULES;
-
-    const python3apt = userconfig.PYTHON3_APT_MODULES;
-
-    const python2pip = userconfig.PYTHON2_PIP_MODULES;
-
-    const python3pip = userconfig.PYTHON3_PIP_MODULES;
-
-    const keyboard = userconfig.RASPBIAN_KEYBOARD_LAYOUT;
-
-    const pi_password = userconfig.PI_USER_PASSWORD;
-
-    const wifipassword = userconfig.RASPBIAN_WIFI_PASSWORD;
-
-    const ssid = userconfig.RASPBIAN_WIFI_SSID;
-
-    const overridewifi = userconfig.RASPBIAN_OVERRIDE_WIFI_SETTINGS;
-
-    const dockercontainers = Object.keys(userconfig).reduce(function(acc, cur){
-        if (cur.startsWith('DOCKER_')) {
-            acc[cur] = userconfig[cur];
-        }
-
-        return acc;
-    }, {});
-
+    //console.log(configdata);
         
     var app = new Vue({
         el: '#app',
         methods: {
+            run: function(event) {
+                alert('Run');
+            },
+
             save: function(event) {
                 const data_to_save = JSON.parse(JSON.stringify(this.$data));
                 yaml = require('js-yaml');
                 fs = require('fs');
         //const yamlfile = pathName + path.sep + "raspberrypi-ansible-master" + path.sep + "group_vars" + path.sep + "raspberrypis2.yml";
-        console.log(yaml.safeDump(data_to_save));
+        //console.log(yaml.safeDump(data_to_save));
 
             pathStorage = storage.get('workspacePath', function(error,data){
         const pathName = data.path[0];
