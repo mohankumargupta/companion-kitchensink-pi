@@ -29,11 +29,11 @@
         <legend>Pi settings</legend>
         <div>
             <label for="hostname">Raspberry Pi host name</label>
-            <input type="hostname" :value="PI_HOSTNAME"/>
+            <input v-model="PI_HOSTNAME" type="hostname"/>
         </div>
         <div>
             <label for="piuserpassword">PASSWORD FOR USER <b>pi</b></label>
-            <input name="piuserpassword" type="text" :value="PI_USER_PASSWORD"/>
+            <input v-model="PI_USER_PASSWORD" name="piuserpassword" type="text"/>
         </div>
         </fieldset>
       
@@ -41,7 +41,7 @@
             <legend>Keyboard Layout</legend>
             <div>
                 <label for="keyboardlayout">Language</label>
-                <input name="keyboardlayout" type="text" :value="RASPBIAN_KEYBOARD_LAYOUT"/>
+                <input v-model="RASPBIAN_KEYBOARD_LAYOUT" name="keyboardlayout" type="text"/>
             </div>
         </fieldset>
 
@@ -49,14 +49,14 @@
             <legend>Wifi Settings</legend>
             <div>
                 <label for="overridewifi">Override wifi</label>
-                <input type="checkbox" name="overridewifi" :checked="RASPBIAN_OVERRIDE_WIFI_SETTINGS"/>
+                <input v-model="RASPBIAN_OVERRIDE_WIFI_SETTINGS" type="checkbox" name="overridewifi"/>
             </div>
             <div>
                 <label for="ssid">SSID</label>
-                <input name="ssid" type="text" :value="RASPBIAN_WIFI_SSID" />
+                <input v-model="RASPBIAN_WIFI_SSID" name="ssid" type="text"/>
 
                 <label for="wifipassword">Password</label>
-                <input type="text" name="wifipassword" :value="RASPBIAN_WIFI_PASSWORD"/>
+                <input v-model="RASPBIAN_WIFI_PASSWORD" type="text" name="wifipassword"/>
             </div>
         </fieldset>
 
@@ -64,7 +64,7 @@
             <legend>Bluetooth</legend>
             <div>
                 <label for="bluetooth">Enable Bluetooth</label>
-                <input name="bluetooth" type="checkbox" :checked="RASPBIAN_ENABLE_BLUETOOTH"/>
+                <input v-model="RASPBIAN_ENABLE_BLUETOOTH" name="bluetooth" type="checkbox"/>
             </div>
         </fieldset>
 
@@ -133,7 +133,7 @@
             <div v-for="(value,key) in DOCKER">
                 <div>
                 <label :for="key">{{key}}</label>
-                <input v-model="DOCKER[key]" type="checkbox" :name="key" :checked="value" /> 
+                <input v-model="DOCKER[key]" type="checkbox" :name="key" /> 
                 </div>
             </div>            
         </fieldset>
